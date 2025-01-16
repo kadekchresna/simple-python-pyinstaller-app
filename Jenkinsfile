@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'python:3.13-slim'
+            image 'kadekchresna/py-submision:3.13-slim'
             args '-p 3000:3000'
         }
     }
