@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.13-slim'
+            args '-p 3000:3000'
+        }
+    }
     options {
         skipStagesAfterUnstable()
     }
