@@ -25,6 +25,12 @@ pipeline {
                 }
             }
         }
+        stage('Manual Approval') {
+            steps {
+                input message: 'Lanjutkan ke tahap Deploy?'
+            }
+        }
+        
         stage('Deliver') { 
             steps {
                 sh "pyinstaller --onefile sources/add2vals.py" 
