@@ -6,7 +6,7 @@ pipeline {
     environment {
         EC2_USER = 'ec2-user' 
         EC2_HOST = 'ec2-3-95-180-17.compute-1.amazonaws.com' 
-        APP_DIR = '/home/ec2-user'
+        APP_DIR = '/home/ec2-user/python-simple-app'
         SSH_KEY_ID = 'ssh-aws-chresna.dev'
     }
     stages {
@@ -19,7 +19,6 @@ pipeline {
             }
             steps {
                 sh 'python -m py_compile sources/add2vals.py sources/calc.py'
-                sh 'pyinstaller --onefile sources/add2vals.py'
                 stash(name: 'compiled-results', includes: 'sources/*.py*')
             }
         }
@@ -53,15 +52,10 @@ pipeline {
                 sshagent(credentials: [SSH_KEY_ID]) {
                     sh """
                     cd /var/jenkins_home/workspace/python-simple-app
-                    tar -czf build.tar.gz -C dist .
+                    tar -czf build.tar.gz -C sources .
                     scp -o StrictHostKeyChecking=no build.tar.gz ${EC2_USER}@${EC2_HOST}:${APP_DIR}
                     ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "cd ${APP_DIR} && tar -xzf build.tar.gz && rm -f build.tar.gz"
                     """
-                }
-            }
-            post {
-                success {
-                    archiveArtifacts 'dist/add2vals' 
                 }
             }
         }
