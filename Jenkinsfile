@@ -39,9 +39,9 @@ pipeline {
         
         stage('Deploy') { 
             steps {
-                sh "pyinstaller --onefile sources/add2vals.py" 
                 sshagent(credentials: [SSH_KEY_ID]) {
                     sh """
+                    pyinstaller --onefile sources/add2vals.py
                     cd /var/jenkins_home/workspace/python-simple-app
                     tar -czf build.tar.gz -C dist .
                     scp -o StrictHostKeyChecking=no build.tar.gz ${EC2_USER}@${EC2_HOST}:${APP_DIR}
