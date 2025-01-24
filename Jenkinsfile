@@ -13,7 +13,7 @@ pipeline {
         stage('Build') {
             agent {
                 docker {
-                    image 'kadekchresna/py-submision:latest'
+                    image 'kadekchresna/py-submision:3.9'
                     args '-p 3000:3000'
                 }
             }
@@ -26,7 +26,7 @@ pipeline {
         stage('Test') {
             agent {
                 docker {
-                    image 'kadekchresna/py-submision:latest'
+                    image 'kadekchresna/py-submision:3.9'
                     args '-p 3000:3000'
                 }
             }
