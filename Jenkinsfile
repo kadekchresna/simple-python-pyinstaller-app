@@ -40,8 +40,6 @@ pipeline {
         stage('Deploy') { 
             steps {
                 sh "pyinstaller --onefile sources/add2vals.py" 
-            }
-            steps {
                 sshagent(credentials: [SSH_KEY_ID]) {
                     sh """
                     cd /var/jenkins_home/workspace/python-simple-app
