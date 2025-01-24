@@ -54,7 +54,7 @@ pipeline {
                     cd /var/jenkins_home/workspace/python-simple-app
                     tar -czf build.tar.gz -C sources .
                     scp -o StrictHostKeyChecking=no build.tar.gz ${EC2_USER}@${EC2_HOST}:${APP_DIR}
-                    ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "cd ${APP_DIR} && tar -xzf build.tar.gz && rm -f build.tar.gz"
+                    ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "cd ${APP_DIR} && tar -xzf build.tar.gz && pyinstaller --onefile add2vals.py && rm -f build.tar.gz"
                     """
                 }
             }
