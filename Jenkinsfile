@@ -45,11 +45,19 @@ pipeline {
         }
         
         stage('Deploy') { 
-            agent { label 'build-in' }
-            steps {
+            agent { 
+                docker {
+                    image 'kadekchresna/py-submision:latest'
+                    args '-p 3000:3000'
+                }
+                steps {
+                    sh 'pyinstaller --onefile sources/add2vals.py'
+                }
+            }
+            agent { 
+                label 'build-in' 
                 sshagent(credentials: [SSH_KEY_ID]) {
                     sh """
-                    pyinstaller --onefile sources/add2vals.py
                     cd /var/jenkins_home/workspace/python-simple-app
                     tar -czf build.tar.gz -C dist .
                     scp -o StrictHostKeyChecking=no build.tar.gz ${EC2_USER}@${EC2_HOST}:${APP_DIR}
