@@ -45,7 +45,7 @@ pipeline {
         }
         
         stage('Deploy') { 
-            agent { label 'master' }
+            agent { label 'build-in' }
             steps {
                 sshagent(credentials: [SSH_KEY_ID]) {
                     sh """
