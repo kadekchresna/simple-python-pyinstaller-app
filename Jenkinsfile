@@ -45,24 +45,31 @@ pipeline {
         }
         
         stage('Deploy') { 
-            agent { 
-                docker {
-                    image 'kadekchresna/py-submision:latest'
-                    args '-p 3000:3000'
+            stages {
+                stage('Packaging') {
+                    agent { 
+                        docker {
+                            image 'kadekchresna/py-submision:latest'
+                            args '-p 3000:3000'
+                        }
+                    }
+                    steps {
+                        sh 'pyinstaller --onefile sources/add2vals.py'
+                    }
                 }
-                steps {
-                    sh 'pyinstaller --onefile sources/add2vals.py'
-                }
-            }
-            agent { 
-                label 'build-in' 
-                sshagent(credentials: [SSH_KEY_ID]) {
-                    sh """
-                    cd /var/jenkins_home/workspace/python-simple-app
-                    tar -czf build.tar.gz -C dist .
-                    scp -o StrictHostKeyChecking=no build.tar.gz ${EC2_USER}@${EC2_HOST}:${APP_DIR}
-                    ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "cd ${APP_DIR} && tar -xzf build.tar.gz && rm -f build.tar.gz"
-                    """
+                stage('Deploy to AWS EC2') {
+                    agent { 
+                        label 'build-in' 
+                    }
+                    sshagent(credentials: [SSH_KEY_ID]) {
+                        sh """
+                        cd /var/jenkins_home/workspace/python-simple-app
+                        tar -czf build.tar.gz -C dist .
+                        scp -o StrictHostKeyChecking=no build.tar.gz ${EC2_USER}@${EC2_HOST}:${APP_DIR}
+                        ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "cd ${APP_DIR} && tar -xzf build.tar.gz && rm -f build.tar.gz"
+                        """
+                    }
+                    
                 }
             }
             post {
